@@ -1,4 +1,6 @@
-
-static void test_verify(void);
+#ifndef TEST_H
+#define TEST_H
 
 void test_all(void);
+
+#endif
