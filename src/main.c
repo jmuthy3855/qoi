@@ -5,15 +5,14 @@
 #include "main.h"
 #include "test.h"
 
-#define TEST_MODE 0
+#define TEST_MODE 1
 
-static void read_header(FILE *fp, qoi_header_struct *header);
 static void print_header(qoi_header_struct *header);
 
 // read header
 // width and height are read in reverse order...
 // so have to read into uin32_t backwards
-static void read_header(FILE *fp, qoi_header_struct *header) {
+void read_header(FILE *fp, qoi_header_struct *header) {
     uint8_t *conv_ptr;
     char buf[4];
 
