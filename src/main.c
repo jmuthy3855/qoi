@@ -9,6 +9,15 @@
 
 static void print_header(qoi_header_struct *header);
 
+int init_app(qoi_app_struct *app) {
+    memset(app, 0, sizeof(*app));
+    set_pixel(&app->prev_pixel, 0, 0, 0, 255);
+
+    for (int i = 0; i < PREV_PIXELS_LENGTH; i++) {
+        set_pixel(&app->prev_pixels[i], 0, 0, 0, 255);
+    }
+}
+
 // read header
 // width and height are read in reverse order...
 // so have to read into uin32_t backwards
@@ -70,6 +79,7 @@ int main(int argc, char **argv) {
 #if TEST_MODE
     fprintf(stderr, "TEST MODE\n");
     test_all();
+    return 0;
 #endif
     
     app.f_qoi = verify_and_open_file(argv[1]);

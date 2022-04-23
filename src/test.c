@@ -6,7 +6,9 @@
 
 #define NUM_TEST_FILES 7
 
+static int pixel_equals(pixel_struct *pixel_1, pixel_struct *pixel_2);
 static void test_verify_and_header(void);
+static void test_init_app(void);
 
 // test files provided by QOI website
 static char *input_files[NUM_TEST_FILES] = {"dice", "kodim10", "kodim23", "qoi_logo", "testcard", "testcard_rgba", "wikipedia_008"};
@@ -24,8 +26,14 @@ static qoi_header_struct headers[NUM_TEST_FILES] = {
 
 void test_all(void) {
     test_verify_and_header();
+    test_init_app();
 
     fprintf(stderr, "all tests passed!\n");
+}
+
+static int pixel_equals(pixel_struct *pixel_1, pixel_struct *pixel_2) {
+    return (pixel_1->red == pixel_2->red && pixel_1->green == pixel_2->green &&
+            pixel_1->blue == pixel_2->blue && pixel_1->alpha == pixel_2->alpha);
 }
 
 // verifying and reading header are related
@@ -48,4 +56,18 @@ static void test_verify_and_header(void) {
 
         fprintf(stderr, "test_verify %d passed\n", i + 1);
     }
+}
+
+static void test_init_app(void) {
+    qoi_app_struct app;
+    pixel_struct cmp = {0, 0, 0, 255};
+
+    init_app(&app);
+    assert(pixel_equals(&app.prev_pixel, &cmp));
+
+    for (int i = 0; i < PREV_PIXELS_LENGTH; i++) {
+        assert(pixel_equals(&app.prev_pixels[i], &cmp));
+    }
+
+    fprintf(stderr, "test_init passed\n");
 }

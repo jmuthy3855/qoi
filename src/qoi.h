@@ -12,4 +12,13 @@ typedef struct _qoi_header_struct_ {
     // 1 = all channels linear
 } qoi_header_struct;
 
+typedef struct _pixel_struct_ {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+    uint8_t alpha;
+} pixel_struct;
+
+void set_pixel(pixel_struct *pixel, uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
+
 #endif
