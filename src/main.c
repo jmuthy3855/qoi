@@ -9,6 +9,36 @@
 
 static void print_header(qoi_header_struct *header);
 
+void allocate_pixel_2D_array(pixel_struct ***grid, int width, int height) {
+    pixel_struct default_pixel = {0, 0, 0, 255};
+    *grid = malloc(sizeof(pixel_struct *) * height);
+
+    if (!*grid) {
+        fprintf(stderr, "row malloc failed\n");
+        exit(-1);
+    }
+    
+    for (int i = 0; i < height; i++) {
+        (*grid)[i] = malloc(sizeof(pixel_struct) * width);
+
+        if (!(*grid)[i]) {
+            fprintf(stderr, "column malloc failed\n");
+            exit(-1);
+        }
+
+        // set row to default pixel color
+        set_pixel_row((*grid)[i], width, &default_pixel);
+    }
+    
+}
+
+static void print_header(qoi_header_struct *header) {
+    fprintf(stderr, "width: %" PRIu32 "\n", header->width);
+    fprintf(stderr, "height: %" PRIu32 "\n", header->height);
+    fprintf(stderr, "channels: %" PRIu8 "\n", header->channels);
+    fprintf(stderr, "colorspace: %" PRIu8 "\n", header->colorspace);
+}
+
 int init_app(qoi_app_struct *app) {
     memset(app, 0, sizeof(*app));
     set_pixel(&app->prev_pixel, 0, 0, 0, 255);
@@ -41,12 +71,7 @@ void read_header(FILE *fp, qoi_header_struct *header) {
     fread(&header->colorspace, 1, 1, fp);
 }
 
-static void print_header(qoi_header_struct *header) {
-    fprintf(stderr, "width: %" PRIu32 "\n", header->width);
-    fprintf(stderr, "height: %" PRIu32 "\n", header->height);
-    fprintf(stderr, "channels: %" PRIu8 "\n", header->channels);
-    fprintf(stderr, "colorspace: %" PRIu8 "\n", header->colorspace);
-}
+
 
 // check extension and magic bytes, return opened file
 FILE *verify_and_open_file(char *fname) {
@@ -82,16 +107,22 @@ int main(int argc, char **argv) {
     return 0;
 #endif
     
+    // read magic bytes and open file
     app.f_qoi = verify_and_open_file(argv[1]);
 
     if (!app.f_qoi) {
         fprintf(stderr, "something went wrong when opening input file\n");
-        exit(-1);
+        return -1;
     }
 
+    // read header and display
     read_header(app.f_qoi, &app.header);
     print_header(&app.header);
 
-    fprintf(stderr, "done\n");
+    // allocate memory for decoded pixels 2D array
+    allocate_pixel_2D_array(&app.decoded_pixels, app.header.width, app.header.height);
+
+
+    fprintf(stderr, "QOI decoding done\n");
     return 0;
 }
