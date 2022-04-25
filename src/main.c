@@ -3,11 +3,61 @@
 #include <string.h>
 #include <inttypes.h>
 #include "main.h"
+#include "qoi.h"
+#include "display_qoi.h"
 #include "test.h"
 
-#define TEST_MODE 1
+#define TEST_MODE       0
+#define HEADER_SIZE     14
+#define READ_SIZE       4096
 
+static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp);
 static void print_header(qoi_header_struct *header);
+
+// load file into buffer
+// assumes QOI magic bytes and header already read
+// buffer should not be allocated before hand
+static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp) {
+    size_t total_bytes_read = 0;
+    int i = 0;
+    char *save_ptr;
+
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp) - HEADER_SIZE; // we already read magic bytes
+    fseek(fp, HEADER_SIZE, SEEK_SET);
+
+    *file_buf = malloc(fsize);
+
+    if (!*file_buf) {
+        fprintf(stderr, "filebuf malloc error\n");
+        exit(-1);
+    }
+
+    save_ptr = *file_buf;
+
+    size_t bytes_read = fread(*file_buf, 1, fsize, fp);
+    total_bytes_read += bytes_read;
+
+    /*
+    while (!feof(fp)) {
+        size_t bytes_read = fread(*file_buf, 1, READ_SIZE, fp);
+        *file_buf += bytes_read;
+        total_bytes_read += bytes_read;
+        i++;
+    }*/
+
+    fprintf(stderr, "total bytes read: %d\n", total_bytes_read);
+    *file_buf = save_ptr;
+
+    return fsize;
+}
+
+static void print_header(qoi_header_struct *header) {
+    fprintf(stderr, "width: %" PRIu32 "\n", header->width);
+    fprintf(stderr, "height: %" PRIu32 "\n", header->height);
+    fprintf(stderr, "channels: %" PRIu8 "\n", header->channels);
+    fprintf(stderr, "colorspace: %" PRIu8 "\n", header->colorspace);
+}
 
 void allocate_pixel_2D_array(pixel_struct ***grid, int width, int height) {
     pixel_struct default_pixel = {0, 0, 0, 255};
@@ -30,13 +80,6 @@ void allocate_pixel_2D_array(pixel_struct ***grid, int width, int height) {
         set_pixel_row((*grid)[i], width, &default_pixel);
     }
     
-}
-
-static void print_header(qoi_header_struct *header) {
-    fprintf(stderr, "width: %" PRIu32 "\n", header->width);
-    fprintf(stderr, "height: %" PRIu32 "\n", header->height);
-    fprintf(stderr, "channels: %" PRIu8 "\n", header->channels);
-    fprintf(stderr, "colorspace: %" PRIu8 "\n", header->colorspace);
 }
 
 int init_app(qoi_app_struct *app) {
@@ -82,7 +125,8 @@ FILE *verify_and_open_file(char *fname) {
     ext = strstr(fname, ".qoi");
 
     if (ext && !strcmp(ext, ".qoi")) {
-        fp = fopen(fname, "r");
+        // without the b, fread reaches EOF after 712 bytes...
+        fp = fopen(fname, "r+b");
 
         if (fp) {
             fread(magic_bytes, 1, 4, fp);
@@ -106,6 +150,13 @@ int main(int argc, char **argv) {
     test_all();
     return 0;
 #endif
+
+    if (argc < 2) {
+        fprintf(stderr, "input file not specified\n");
+        return -1;
+    }
+
+    init_app(&app);
     
     // read magic bytes and open file
     app.f_qoi = verify_and_open_file(argv[1]);
@@ -119,9 +170,19 @@ int main(int argc, char **argv) {
     read_header(app.f_qoi, &app.header);
     print_header(&app.header);
 
+    // allocate file buf, load contents into filebuf
+    app.file_buf_size = alloc_and_load_into_filebuf(&app.file_buf, app.f_qoi);
+    fprintf(stderr, "QOI encoded bytes: %ld\n", app.file_buf_size);
+    fclose(app.f_qoi);
+
     // allocate memory for decoded pixels 2D array
     allocate_pixel_2D_array(&app.decoded_pixels, app.header.width, app.header.height);
 
+    // decode qoi image
+    decode_qoi(&app);
+
+    // print qoi image
+    print_qoi(&app);
 
     fprintf(stderr, "QOI decoding done\n");
     return 0;
