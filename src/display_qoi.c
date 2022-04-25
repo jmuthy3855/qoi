@@ -16,20 +16,16 @@ void print_qoi(qoi_app_struct *app) {
     
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-    for (int r = 0; r < app->curr_row; r++) {
-        int y_pixels = 0;
+    for (int r = 0; r < app->header.height; r++) {
+        for (int c = 0; c < app->header.width; c++) {
+            uint8_t red = app->decoded_pixels[r][c].red;
+            uint8_t green = app->decoded_pixels[r][c].green;
+            uint8_t blue = app->decoded_pixels[r][c].blue;
+            uint8_t alpha = app->decoded_pixels[r][c].alpha;
 
-        if (r < app->curr_row - 1) {
-            y_pixels = app->header.width;
-        } else {
-            y_pixels = app->curr_col;
-        }
-
-        for (int c = 0; c < y_pixels; c++) {
-            uint8_t red = app->decoded_pixels[app->curr_row][app->curr_col].red;
-            uint8_t green = app->decoded_pixels[app->curr_row][app->curr_col].green;
-            uint8_t blue = app->decoded_pixels[app->curr_row][app->curr_col].blue;
-            uint8_t alpha = app->decoded_pixels[app->curr_row][app->curr_col].alpha;
+            //if (red != 0 && green != 0 && blue != 0 && alpha != 255) {
+             //   fprintf(stderr, "found non-default pixel\n");
+            //}
             
             SDL_SetRenderDrawColor(renderer, red, green, blue, alpha);
             SDL_RenderDrawPoint(renderer, c, r); // x is col, y is row

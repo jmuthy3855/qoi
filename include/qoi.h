@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-#define PREV_PIXELS_LENGTH 64
+#define PREV_PIXELS_LENGTH  64
+#define HEADER_SIZE         14
 
 typedef enum tag_enum {
     QOI_OP_RGB = 0b11111110,
@@ -42,6 +43,7 @@ typedef struct _qoi_app_struct_ {
     
     int                                 curr_row;
     int                                 curr_col;
+    int                                 num_pixels;
 } qoi_app_struct;
 
 int pixel_equals(pixel_struct *pixel_1, pixel_struct *pixel_2);

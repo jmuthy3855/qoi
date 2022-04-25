@@ -8,9 +8,6 @@ OBJ=.
 qoi.x: main.o test.o qoi.o display_qoi.o
 	$(CC) -I$(INCSDL2) -I$(INC) -L $(LIBSDL2) main.o test.o qoi.o display_qoi.o -lmingw32 -lSDL2main -lSDL2 -o qoi.x
 
-sdl.x: sdltest.o
-	$(CC) -I$(INCSDL2) -I$(INC) -L $(LIBSDL2) sdltest.o -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -o sdl.x
-
 main.o: $(SRC)/main.c $(INC)/main.h
 	$(CC) -I$(INC) -c $(SRC)/main.c
 

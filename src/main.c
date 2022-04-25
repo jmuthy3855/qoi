@@ -8,7 +8,6 @@
 #include "test.h"
 
 #define TEST_MODE       0
-#define HEADER_SIZE     14
 #define READ_SIZE       4096
 
 static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp);
@@ -75,7 +74,6 @@ void allocate_pixel_2D_array(pixel_struct ***grid, int width, int height) {
             fprintf(stderr, "column malloc failed\n");
             exit(-1);
         }
-
         // set row to default pixel color
         set_pixel_row((*grid)[i], width, &default_pixel);
     }
@@ -87,7 +85,7 @@ int init_app(qoi_app_struct *app) {
     set_pixel(&app->prev_pixel, 0, 0, 0, 255);
 
     for (int i = 0; i < PREV_PIXELS_LENGTH; i++) {
-        set_pixel(&app->prev_pixels[i], 0, 0, 0, 255);
+        set_pixel(&app->prev_pixels[i], 0, 0, 0, 255); // 255 or 0?
     }
 }
 
