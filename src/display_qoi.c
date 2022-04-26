@@ -13,8 +13,7 @@ void print_qoi(qoi_app_struct *app) {
     
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
     SDL_RenderClear(renderer);
-    
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // default color for testing
 
     for (int r = 0; r < app->header.height; r++) {
         for (int c = 0; c < app->header.width; c++) {
@@ -23,10 +22,6 @@ void print_qoi(qoi_app_struct *app) {
             uint8_t blue = app->decoded_pixels[r][c].blue;
             uint8_t alpha = app->decoded_pixels[r][c].alpha;
 
-            //if (red != 0 && green != 0 && blue != 0 && alpha != 255) {
-             //   fprintf(stderr, "found non-default pixel\n");
-            //}
-            
             SDL_SetRenderDrawColor(renderer, red, green, blue, alpha);
             SDL_RenderDrawPoint(renderer, c, r); // x is col, y is row
         }
@@ -42,5 +37,4 @@ void print_qoi(qoi_app_struct *app) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    
 }

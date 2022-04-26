@@ -3,6 +3,6 @@
 
 #include "qoi.h"
 
-void print_qoi(qoi_app_struct *app);
+void print_qoi(qoi_app_struct *app);    
 
 #endif

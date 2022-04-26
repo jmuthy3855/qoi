@@ -13,16 +13,14 @@
 static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp);
 static void print_header(qoi_header_struct *header);
 
-// load file into buffer
-// assumes QOI magic bytes and header already read
-// buffer should not be allocated before hand
+// allocate and load file into buffer, assumes QOI magic bytes and header already read
 static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp) {
     size_t total_bytes_read = 0;
     int i = 0;
     char *save_ptr;
 
     fseek(fp, 0, SEEK_END);
-    long fsize = ftell(fp) - HEADER_SIZE; // we already read magic bytes
+    long fsize = ftell(fp) - HEADER_SIZE; // we already read header
     fseek(fp, HEADER_SIZE, SEEK_SET);
 
     *file_buf = malloc(fsize);
@@ -34,18 +32,8 @@ static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp) {
 
     save_ptr = *file_buf;
 
-    size_t bytes_read = fread(*file_buf, 1, fsize, fp);
+    size_t bytes_read = fread(*file_buf, 1, fsize, fp); // is reading in loop better??
     total_bytes_read += bytes_read;
-
-    /*
-    while (!feof(fp)) {
-        size_t bytes_read = fread(*file_buf, 1, READ_SIZE, fp);
-        *file_buf += bytes_read;
-        total_bytes_read += bytes_read;
-        i++;
-    }*/
-
-    fprintf(stderr, "total bytes read: %d\n", total_bytes_read);
     *file_buf = save_ptr;
 
     return fsize;
@@ -74,10 +62,7 @@ void allocate_pixel_2D_array(pixel_struct ***grid, int width, int height) {
             fprintf(stderr, "column malloc failed\n");
             exit(-1);
         }
-        // set row to default pixel color
-        set_pixel_row((*grid)[i], width, &default_pixel);
     }
-    
 }
 
 int init_app(qoi_app_struct *app) {
@@ -112,8 +97,6 @@ void read_header(FILE *fp, qoi_header_struct *header) {
     fread(&header->colorspace, 1, 1, fp);
 }
 
-
-
 // check extension and magic bytes, return opened file
 FILE *verify_and_open_file(char *fname) {
     FILE *fp;
@@ -135,8 +118,8 @@ FILE *verify_and_open_file(char *fname) {
                 return fp;
             } 
         }
-    } 
-
+    }
+     
     return NULL;
 }
 
@@ -168,9 +151,9 @@ int main(int argc, char **argv) {
     read_header(app.f_qoi, &app.header);
     print_header(&app.header);
 
-    // allocate file buf, load contents into filebuf
+    // allocate file buf, load entire file contents into filebuf
     app.file_buf_size = alloc_and_load_into_filebuf(&app.file_buf, app.f_qoi);
-    fprintf(stderr, "QOI encoded bytes: %ld\n", app.file_buf_size);
+    fprintf(stderr, "QOI encoded bytes read: %ld\n", app.file_buf_size);
     fclose(app.f_qoi);
 
     // allocate memory for decoded pixels 2D array

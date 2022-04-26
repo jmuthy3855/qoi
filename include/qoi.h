@@ -6,14 +6,14 @@
 #define PREV_PIXELS_LENGTH  64
 #define HEADER_SIZE         14
 
-typedef enum tag_enum {
+typedef enum qoi_tag_enum {
     QOI_OP_RGB = 0b11111110,
     QOI_OP_RGBA = 0b11111111,
     QOI_OP_INDEX = 0b00,
     QOI_OP_DIFF = 0b01,
     QOI_OP_LUMA = 0b10,
     QOI_OP_RUN = 0b11
-} tag;
+} qoi_tag;
 
 typedef struct _pixel_struct_ {
     uint8_t red;
@@ -48,7 +48,6 @@ typedef struct _qoi_app_struct_ {
 
 int pixel_equals(pixel_struct *pixel_1, pixel_struct *pixel_2);
 void set_pixel(pixel_struct *pixel, uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
-void set_pixel_row(pixel_struct *row, int row_length, pixel_struct *pixel);
 void decode_qoi(qoi_app_struct *app);
 
 #endif
