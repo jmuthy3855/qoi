@@ -16,7 +16,7 @@ static void handle_op_run(qoi_app_struct *app, uint8_t run_length);
 static void handle_op_diff(qoi_app_struct *app, uint8_t red_diff, uint8_t green_diff, uint8_t blue_diff);
 static void handle_op_luma(qoi_app_struct *app, uint8_t diff_green, uint8_t diff_red_green, uint8_t diff_blue_green);
 static void handle_op_rgb(qoi_app_struct *app, uint8_t red, uint8_t green, uint8_t blue);
-static void handle_op_rgba(qoi_app_struct *app, int red, int green, int blue, int alpha);
+static void handle_op_rgba(qoi_app_struct *app, int8_t red, int8_t green, int8_t blue, int8_t alpha);
 
 static void print_pixel(pixel_struct *pixel) {
     fprintf(stderr, "red: %d\n", pixel->red);
@@ -98,7 +98,7 @@ static void handle_op_rgb(qoi_app_struct *app, uint8_t red, uint8_t green, uint8
 }
 
 // same as rgb but with alpha component
-static void handle_op_rgba(qoi_app_struct *app, int red, int green, int blue, int alpha) {
+static void handle_op_rgba(qoi_app_struct *app, int8_t red, int8_t green, int8_t blue, int8_t alpha) {
     app->prev_pixel.red = red;
     app->prev_pixel.green = green;
     app->prev_pixel.blue = blue;
