@@ -5,14 +5,11 @@ INCSDL2=../libs/SDL2/include/SDL2
 LIBSDL2=../libs/SDL2/lib
 OBJ=.
 
-qoi.x: main.o test.o qoi.o display_qoi.o
-	$(CC) -I$(INCSDL2) -I$(INC) -L $(LIBSDL2) main.o test.o qoi.o display_qoi.o -lmingw32 -lSDL2main -lSDL2 -o qoi.x
+qoi.x: main.o qoi.o display_qoi.o
+	$(CC) -I$(INCSDL2) -I$(INC) -L $(LIBSDL2) main.o qoi.o display_qoi.o -lmingw32 -lSDL2main -lSDL2 -o qoi.x
 
 main.o: $(SRC)/main.c $(INC)/main.h
 	$(CC) -I$(INC) -c $(SRC)/main.c
-
-test.o: $(SRC)/test.c $(INC)/test.h
-	$(CC) -I$(INC) -c $(SRC)/test.c
 
 qoi.o: $(SRC)/qoi.c $(INC)/qoi.h
 	$(CC) -I$(INC) -c $(SRC)/qoi.c

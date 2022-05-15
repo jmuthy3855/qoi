@@ -39,7 +39,7 @@ typedef struct _qoi_app_struct_ {
 
     pixel_struct                        prev_pixels[PREV_PIXELS_LENGTH];
     pixel_struct                        prev_pixel;
-    pixel_struct                        **decoded_pixels; // where decoded pixels are stored
+    pixel_struct                        *decoded_pixels; // where decoded pixels are stored
     
     int                                 curr_row;
     int                                 curr_col;

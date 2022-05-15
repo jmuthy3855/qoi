@@ -8,7 +8,6 @@ static void print_pixel(pixel_struct *pixel);
 // post decoding functions
 static void post_decode_update(qoi_app_struct *app, qoi_tag qoi_op);
 static void store_pixel(qoi_app_struct *app, pixel_struct *pixel);
-static void update_row_and_col(int *row, int *col, int max_width);
 
 // QOI OPs
 static void handle_op_index(qoi_app_struct *app, int index);
@@ -27,26 +26,16 @@ static void print_pixel(pixel_struct *pixel) {
 
 // called after every QOI op to update app state
 static void post_decode_update(qoi_app_struct *app, qoi_tag qoi_op) {
-    if (qoi_op != QOI_OP_RUN) {
-        app->decoded_pixels[app->curr_row][app->curr_col] = app->prev_pixel; // update current pixel
-        store_pixel(app, &app->prev_pixel); // store in prev pixel array
-    }
-    // for run, just update row, col, and num of pixels
-    update_row_and_col(&app->curr_row, &app->curr_col, app->header.width);
-    app->num_pixels++;
+    /* update current pixel */
+    app->decoded_pixels[app->num_pixels++] = app->prev_pixel; 
+    
+    /* store current pixel in prev pixel array */
+    store_pixel(app, &app->prev_pixel);
 }
 
 static void store_pixel(qoi_app_struct *app, pixel_struct *pixel) {
     int index = (pixel->red * 3 + pixel->green * 5 + pixel->blue * 7 + pixel->alpha * 11) % 64;
     app->prev_pixels[index] = *pixel;
-}
-
-static void update_row_and_col(int *row, int *col, int max_width) {
-    *col = (*col + 1) % max_width;
-
-    if (*col == 0) {
-        *row += 1;
-    }
 }
 
 // index into array and set as decoded pixel
@@ -60,7 +49,7 @@ static void handle_op_run(qoi_app_struct *app, uint8_t run_length) {
     run_length += 1;
 
     for (int i = 0; i < run_length; i++) {
-        app->decoded_pixels[app->curr_row][app->curr_col] = app->prev_pixel;
+        // we just update the current pixel with the previous pixel value
         post_decode_update(app, QOI_OP_RUN);
     }   
 }

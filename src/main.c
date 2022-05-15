@@ -5,9 +5,7 @@
 #include "main.h"
 #include "qoi.h"
 #include "display_qoi.h"
-#include "test.h"
 
-#define TEST_MODE       0
 #define READ_SIZE       4096
 
 static long alloc_and_load_into_filebuf(char **file_buf, FILE *fp);
@@ -46,22 +44,12 @@ static void print_header(qoi_header_struct *header) {
     fprintf(stderr, "colorspace: %" PRIu8 "\n", header->colorspace);
 }
 
-void allocate_pixel_2D_array(pixel_struct ***grid, int width, int height) {
-    pixel_struct default_pixel = {0, 0, 0, 255};
-    *grid = malloc(sizeof(pixel_struct *) * height);
+void allocate_decode_array(pixel_struct **grid, int width, int height) {
+    *grid = malloc(sizeof(pixel_struct) * width * height);
 
     if (!*grid) {
-        fprintf(stderr, "row malloc failed\n");
+        fprintf(stderr, "decode array malloc failed\n");
         exit(-1);
-    }
-    
-    for (int i = 0; i < height; i++) {
-        (*grid)[i] = malloc(sizeof(pixel_struct) * width);
-
-        if (!(*grid)[i]) {
-            fprintf(stderr, "column malloc failed\n");
-            exit(-1);
-        }
     }
 }
 
@@ -126,12 +114,6 @@ FILE *verify_and_open_file(char *fname) {
 int main(int argc, char **argv) {
     qoi_app_struct app;
 
-#if TEST_MODE
-    fprintf(stderr, "TEST MODE\n");
-    test_all();
-    return 0;
-#endif
-
     if (argc < 2) {
         fprintf(stderr, "input file not specified\n");
         return -1;
@@ -157,7 +139,7 @@ int main(int argc, char **argv) {
     fclose(app.f_qoi);
 
     // allocate memory for decoded pixels 2D array
-    allocate_pixel_2D_array(&app.decoded_pixels, app.header.width, app.header.height);
+    allocate_decode_array(&app.decoded_pixels, app.header.width, app.header.height);
 
     // decode qoi image
     decode_qoi(&app);
