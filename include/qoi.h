@@ -15,11 +15,12 @@ typedef enum qoi_tag_enum {
     QOI_OP_RUN = 0b11
 } qoi_tag;
 
+/* red green blue alpha */
 typedef struct _pixel_struct_ {
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
-    uint8_t alpha;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
 } pixel_struct;
 
 typedef struct _qoi_header_struct_ {
@@ -39,10 +40,7 @@ typedef struct _qoi_app_struct_ {
 
     pixel_struct                        prev_pixels[PREV_PIXELS_LENGTH];
     pixel_struct                        prev_pixel;
-    pixel_struct                        *decoded_pixels; // where decoded pixels are stored
-    
-    int                                 curr_row;
-    int                                 curr_col;
+    pixel_struct                        *decoded_pixels; // where decoded pixels are stored, width x height size
     int                                 num_pixels;
 } qoi_app_struct;
 

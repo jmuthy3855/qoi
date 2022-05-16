@@ -40,10 +40,10 @@ void print_qoi(qoi_app_struct *app) {
     /* fill draw buffer with decoded pixel values*/
     for (int p = 0; p < app->num_pixels; p++) {
         // white space...?
-        draw_buffer[draw_buffer_idx++] = (app->decoded_pixels[p].red   << 24) | 
-                                         (app->decoded_pixels[p].green << 16) | 
-                                         (app->decoded_pixels[p].blue  <<  8) |  
-                                          app->decoded_pixels[p].alpha;
+        draw_buffer[draw_buffer_idx++] = (app->decoded_pixels[p].r   << 24) | 
+                                         (app->decoded_pixels[p].g << 16) | 
+                                         (app->decoded_pixels[p].b  <<  8) |  
+                                          app->decoded_pixels[p].a;
     }
 
     /* update texture with pixels in draw buffer */
