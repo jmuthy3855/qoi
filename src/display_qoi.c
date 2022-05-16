@@ -57,7 +57,8 @@ void print_qoi(qoi_app_struct *app) {
     
     /* display decoded picture until user quits out */
     while (1) {
-        if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
+        /* wait for next event, don't continously */
+        if (SDL_WaitEvent(&event) && event.type == SDL_QUIT)
             break;
     }
     
