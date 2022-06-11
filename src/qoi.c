@@ -12,6 +12,8 @@ static void print_pixel(pixel_struct *pixel) {
     fprintf(stderr, "alpha: %d\n", pixel->a);
 }
 
+/* QOI_OP_RGB and QOI_OP_RGBA can be combined into one related case,
+   but separating them makes it more readable */
 void decode_qoi(qoi_app_struct *app) {
     uint8_t *buf             = (uint8_t *) app->file_buf;
     int buf_ptr              = 0;
@@ -19,11 +21,7 @@ void decode_qoi(qoi_app_struct *app) {
     int run_count            = 0;
     const int total_pixels   = app->header.width * app->header.height;
     
-    /* decoded values */
-    uint8_t r                = 0;
-    uint8_t g                = 0;
-    uint8_t b                = 0;
-    uint8_t a                = 0;
+    /* decoded values (r,g,b,a already in prev_pixel) */
     uint8_t run_length       = 0;
     uint8_t index            = 0;
     uint8_t r_diff           = 0;
@@ -36,24 +34,15 @@ void decode_qoi(qoi_app_struct *app) {
         if (run_length != 0) {
             run_length--;
         }  else if ((buf[buf_ptr] & 0xFF) == QOI_OP_RGB) {
-            r = buf[++buf_ptr];
-            g = buf[++buf_ptr];
-            b = buf[++buf_ptr];
-
-            app->prev_pixel.r = r;
-            app->prev_pixel.g = g;
-            app->prev_pixel.b = b;
+            app->prev_pixel.r = buf[++buf_ptr];
+            app->prev_pixel.g = buf[++buf_ptr];
+            app->prev_pixel.b = buf[++buf_ptr];
             buf_ptr++;
         } else if ((buf[buf_ptr] & 0xFF) == QOI_OP_RGBA) {
-            r = buf[++buf_ptr];
-            g = buf[++buf_ptr];
-            b = buf[++buf_ptr];
-            a = buf[++buf_ptr];
-
-            app->prev_pixel.r = r;
-            app->prev_pixel.g = g;
-            app->prev_pixel.b = b;
-            app->prev_pixel.a = a;
+            app->prev_pixel.r = buf[++buf_ptr];
+            app->prev_pixel.g = buf[++buf_ptr];
+            app->prev_pixel.b = buf[++buf_ptr];
+            app->prev_pixel.a = buf[++buf_ptr];
             buf_ptr++;
         } else if ((buf[buf_ptr] & 0xC0) == QOI_OP_INDEX) {
             index = buf[buf_ptr] & 0x3F;
