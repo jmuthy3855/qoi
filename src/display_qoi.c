@@ -40,9 +40,9 @@ void print_qoi(qoi_app_struct *app) {
     /* fill draw buffer with decoded pixel values*/
     for (int p = 0; p < app->num_pixels; p++) {
         // white space...?
-        draw_buffer[draw_buffer_idx++] = (app->decoded_pixels[p].r   << 24) | 
+        draw_buffer[draw_buffer_idx++] = (app->decoded_pixels[p].r << 24) | 
                                          (app->decoded_pixels[p].g << 16) | 
-                                         (app->decoded_pixels[p].b  <<  8) |  
+                                         (app->decoded_pixels[p].b <<  8) |  
                                           app->decoded_pixels[p].a;
     }
 
@@ -57,7 +57,7 @@ void print_qoi(qoi_app_struct *app) {
     
     /* display decoded picture until user quits out */
     while (1) {
-        /* wait for next event, don't continously */
+        /* wait for next event, don't continously poll */
         if (SDL_WaitEvent(&event) && event.type == SDL_QUIT)
             break;
     }

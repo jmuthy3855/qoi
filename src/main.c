@@ -55,10 +55,14 @@ void allocate_decode_array(pixel_struct **grid, int width, int height) {
 
 int init_app(qoi_app_struct *app) {
     memset(app, 0, sizeof(*app));
-    set_pixel(&app->prev_pixel, 0, 0, 0, 255);
+
+    app->prev_pixel.r = 0;
+    app->prev_pixel.g = 0;
+    app->prev_pixel.b = 0;
+    app->prev_pixel.a = 255;
 
     for (int i = 0; i < PREV_PIXELS_LENGTH; i++) {
-        set_pixel(&app->prev_pixels[i], 0, 0, 0, 255); // 255 or 0?
+        app->prev_pixels[i] = app->prev_pixel;
     }
 }
 

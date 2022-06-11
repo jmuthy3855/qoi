@@ -44,8 +44,6 @@ typedef struct _qoi_app_struct_ {
     int                                 num_pixels;
 } qoi_app_struct;
 
-int pixel_equals(pixel_struct *pixel_1, pixel_struct *pixel_2);
-void set_pixel(pixel_struct *pixel, uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 void decode_qoi(qoi_app_struct *app);
 
 #endif
